@@ -29,18 +29,26 @@ app.add_middleware(
 )
 
 # Data paths
-# Check if running on Railway with volume mounted at /data
-if os.path.exists('/data'):
-    print("Using Railway volume for data files...")
-    BOOKS_PATH = '/data/Books.csv'
-    RATINGS_PATH = '/data/Ratings.csv'
-    USERS_PATH = '/data/Users.csv'
+# Check for data files in multiple possible locations
+for data_dir in ['/data', '/app', '/app/website/backend', '.', '..', '../..']:
+    books_path = os.path.join(data_dir, "Books.csv")
+    ratings_path = os.path.join(data_dir, "Ratings.csv")
+    users_path = os.path.join(data_dir, "Users.csv")
+    
+    if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exists(users_path):
+        print(f"Found data files in {data_dir}")
+        BOOKS_PATH = books_path
+        RATINGS_PATH = ratings_path
+        USERS_PATH = users_path
+        break
 else:
-    # Local development paths
-    print("Using local data files...")
+    # Fallback to original paths if not found anywhere
+    print("Using default data file paths...")
     BOOKS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Books.csv")
     RATINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Ratings.csv")
     USERS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Users.csv")
+
+print(f"Using data files from: {BOOKS_PATH}")
 
 # Initialize data and models
 preprocessor = None
