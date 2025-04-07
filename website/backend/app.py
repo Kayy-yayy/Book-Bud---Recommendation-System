@@ -8,14 +8,38 @@ import uvicorn
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 
-# Add parent directory to path to import recommendation modules
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# Add multiple possible paths to find the recommendation modules
+possible_paths = [
+    os.path.dirname(os.path.abspath(__file__)),  # Current directory
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),  # Root project directory
+    '/app',  # Railway app directory
+    '/app/website/backend',  # Railway backend directory
+    '.',  # Current working directory
+]
+
+for path in possible_paths:
+    if path not in sys.path:
+        sys.path.append(path)
+        print(f"Added {path} to sys.path")
+
+# Print current sys.path for debugging
+print(f"sys.path: {sys.path}")
+
+# Print current directory contents for debugging
+print(f"Current directory contents: {os.listdir(os.path.dirname(os.path.abspath(__file__)))}")
 
 # Import recommendation system modules
-from data_preprocessing import DataPreprocessor
-from content_based import ContentBasedRecommender
-from collaborative_filtering import CollaborativeFilteringRecommender
-from popularity_based import PopularityRecommender
+try:
+    from data_preprocessing import DataPreprocessor
+    from content_based import ContentBasedRecommender
+    from collaborative_filtering import CollaborativeFilteringRecommender
+    from popularity_based import PopularityRecommender
+    print("Successfully imported all recommendation modules")
+except ImportError as e:
+    print(f"Import error: {e}")
+    # Try to find the modules in the current directory
+    module_files = [f for f in os.listdir(os.path.dirname(os.path.abspath(__file__))) if f.endswith('.py')]
+    print(f"Python files in current directory: {module_files}")
 
 app = FastAPI(title="Book Bud API", description="API for Book Bud Recommendation System")
 
