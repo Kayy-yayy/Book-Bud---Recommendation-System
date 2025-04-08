@@ -31,8 +31,6 @@ ENV/
 *.swp
 *.swo
 
-# CSV Files - exclude large data files
-*.csv
 
 # Node.js
 node_modules/
