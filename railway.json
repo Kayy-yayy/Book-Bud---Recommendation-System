@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cp *.py website/backend/ && cp *.csv website/backend/ && cd website/backend && pip install -r requirements.txt"
+    "buildCommand": "mkdir -p website/backend && cp *.py website/backend/ && cp *.csv website/backend/ && cd website/backend && pip install -r requirements.txt"
   },
   "deploy": {
     "startCommand": "cd website/backend && python -c \"import os; print('Current directory:', os.getcwd()); print('Directory contents:', os.listdir('.'))\" && uvicorn app:app --host 0.0.0.0 --port $PORT",
