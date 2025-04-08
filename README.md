@@ -72,108 +72,70 @@ The frontend will be available at http://localhost:3000
 
 ## Deployment Instructions
 
-### Backend Deployment (Railway)
+### Backend Deployment (Render)
 
 #### Basic Deployment
 
-1. Create a Railway account at [railway.app](https://railway.app/)
-2. Install the Railway CLI:
-   ```bash
-   npm i -g @railway/cli
-   ```
-3. Login to Railway:
-   ```bash
-   railway login
-   ```
-4. Navigate to the backend directory:
-   ```bash
-   cd website/backend
-   ```
-5. Create a new Railway project:
-   ```bash
-   railway init
-   ```
-6. Deploy the backend:
-   ```bash
-   railway up
-   ```
-7. Get your backend URL:
-   ```bash
-   railway domain
-   ```
+1. Create a Render account at [render.com](https://render.com/)
+2. Push your code to GitHub
+3. In the Render dashboard, create a new Web Service
+4. Connect your GitHub repository
+5. Configure the service with the following settings:
+   - **Name**: book-bud-backend
+   - **Environment**: Python
+   - **Build Command**: `pip install -r website/backend/requirements.txt && cp *.py website/backend/`
+   - **Start Command**: `cd website/backend && uvicorn app:app --host 0.0.0.0 --port $PORT`
+   - **Environment Variables**: Add `PYTHON_VERSION=3.9.18`
 
-Alternatively, you can connect your GitHub repository to Railway for automatic deployments:
-1. Push your code to GitHub
-2. In Railway dashboard, create a new project from GitHub
-3. Select your repository and the backend directory
-4. Railway will automatically detect and deploy your FastAPI application
+Alternatively, you can use the `render.yaml` file in the repository for automatic configuration:
 
-#### Setting Up Railway Volumes for CSV Data
+```bash
+# From the repository root, push to GitHub
+git add .
+git commit -m "Add Render configuration"
+git push
+```
 
-Since the CSV files are large and excluded from Git, you'll need to set up a Railway volume to store them:
+Then in the Render dashboard, select "Blueprint" when creating a new service and connect to your GitHub repository.
+
+#### Setting Up CSV Data Files on Render
+
+Since the CSV files are large and excluded from Git, you'll need to set up a Render Disk to store them:
 
 ##### Prerequisites
 
-- Railway CLI installed (`npm install -g @railway/cli`)
 - Your CSV files (Books.csv, Ratings.csv, Users.csv)
-- A Railway account
+- A Render account with a paid plan (Disks are not available on the free plan)
 
-##### Step 1: Create a Railway Volume
+##### Step 1: Create a Render Disk
 
-```bash
-railway volume create book-data
-```
+1. In the Render dashboard, go to "Disks" in the left sidebar
+2. Click "New Disk"
+3. Configure the disk:
+   - **Name**: book-data
+   - **Size**: Choose appropriate size (at least 1GB)
+   - **Mount Path**: `/data`
+   - **Service**: Select your backend service
 
-##### Step 2: Link Your Local Repository to Your Railway Project
+##### Step 2: Upload Your CSV Files
 
-```bash
-railway link
-```
+After creating the disk and attaching it to your service:
 
-##### Step 3: Upload Your CSV Files to the Volume
+1. SSH into your Render service from the dashboard
+2. Create the data directory if it doesn't exist:
+   ```bash
+   mkdir -p /data
+   ```
+3. Use SFTP to upload your CSV files to the `/data` directory
 
-First, create a temporary upload script:
-
-```bash
-# Create a script to upload files
-echo '#!/bin/bash
-mkdir -p /data
-cp /tmp/Books.csv /data/
-cp /tmp/Ratings.csv /data/
-cp /tmp/Users.csv /data/
-echo "Files copied to volume successfully!"
-ls -la /data' > upload.sh
-
-# Make it executable
-chmod +x upload.sh
-```
-
-Then, upload your CSV files:
+Alternatively, you can use the Render shell to download the files directly:
 
 ```bash
-# Copy your local CSV files to the temporary location
-railway run --volume book-data cp Books.csv /tmp/
-railway run --volume book-data cp Ratings.csv /tmp/
-railway run --volume book-data cp Users.csv /tmp/
-
-# Run the upload script
-railway run --volume book-data ./upload.sh
-```
-
-##### Step 4: Configure Your Railway Project to Use the Volume
-
-In the Railway dashboard:
-
-1. Go to your project
-2. Click on "Variables"
-3. Add a mount:
-   - Volume: book-data
-   - Mount Path: /data
-
-##### Step 5: Deploy Your Application
-
-```bash
-railway up
+# From the Render shell
+cd /data
+curl -O https://your-storage-url/Books.csv
+curl -O https://your-storage-url/Ratings.csv
+curl -O https://your-storage-url/Users.csv
 ```
 
 ##### Verification
@@ -181,74 +143,46 @@ railway up
 To verify that your files are correctly mounted and accessible:
 
 ```bash
-# Connect to your running service
-railway connect
-
-# Check if files exist
+# From the Render shell
 ls -la /data
 ```
 
 You should see your CSV files listed in the /data directory.
 
-##### Troubleshooting
+### Frontend Deployment (Netlify)
 
-If your files aren't visible or your application can't access them:
+1. Create a Netlify account at [netlify.com](https://netlify.com/)
+2. Push your code to GitHub
+3. In the Netlify dashboard, click "New site from Git"
+4. Connect your GitHub repository
+5. Configure the build settings:
+   - **Base directory**: `website/frontend`
+   - **Build command**: `npm run build`
+   - **Publish directory**: `.next`
+6. Add the environment variable for your backend URL:
+   - Key: `NEXT_PUBLIC_API_URL`
+   - Value: Your Render backend URL (e.g., `https://book-bud-backend.onrender.com`)
 
-1. Make sure the volume is properly mounted at `/data`
-2. Check the Railway logs for any file access errors
-3. Verify that your application has the correct permissions to read from the volume
+The repository includes a `netlify.toml` file in the frontend directory that configures the build process automatically.
 
-##### Alternative Upload Method (if the above doesn't work)
-
-If you're having trouble with the direct upload method, you can also:
-
-1. Deploy a temporary service with the volume mounted
-2. Use Railway's SFTP feature to upload files
-3. Then connect your main service to the same volume
+Alternatively, you can use the Netlify CLI for deployment:
 
 ```bash
-# Deploy a temporary service
-railway service create temp-file-uploader
-railway service link temp-file-uploader
-railway variables set --service temp-file-uploader VOLUME_MOUNT=/data
-railway volume link book-data --service temp-file-uploader
+# Install the Netlify CLI
+npm install -g netlify-cli
 
-# Get SFTP credentials
-railway sftp --service temp-file-uploader
+# Login to Netlify
+netlify login
+
+# Navigate to the frontend directory
+cd website/frontend
+
+# Initialize Netlify site
+netlify init
+
+# Deploy the site
+netlify deploy --prod
 ```
-
-Use the SFTP credentials with your favorite SFTP client to upload the files, then delete the temporary service when done.
-
-### Frontend Deployment (Vercel)
-
-1. Create a Vercel account at [vercel.com](https://vercel.com/)
-2. Install the Vercel CLI:
-   ```bash
-   npm i -g vercel
-   ```
-3. Login to Vercel:
-   ```bash
-   vercel login
-   ```
-4. Navigate to the frontend directory:
-   ```bash
-   cd website/frontend
-   ```
-5. Deploy the frontend:
-   ```bash
-   vercel
-   ```
-6. Set the environment variable for your backend URL:
-   ```bash
-   vercel env add NEXT_PUBLIC_API_URL
-   ```
-   Enter your Railway backend URL when prompted
-
-Alternatively, you can connect your GitHub repository to Vercel for automatic deployments:
-1. Push your code to GitHub
-2. In Vercel dashboard, import your repository
-3. Set the root directory to `website/frontend`
-4. Add the environment variable `NEXT_PUBLIC_API_URL` with your Railway backend URL
 
 ## API Endpoints
 
