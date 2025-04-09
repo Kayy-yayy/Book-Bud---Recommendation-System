@@ -1,21 +1,16 @@
 "use client";
 
 import React from "react";
-import { Vortex } from "@/components/ui/vortex";
+import { GradientBackground } from "@/components/ui/gradient-background";
 import Link from "next/link";
 import { IconBrandPython, IconBrandReact, IconDatabase, IconChartBar, IconSearch, IconUsers } from "@tabler/icons-react";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section with Vortex */}
+      {/* Hero Section with Gradient Background */}
       <div className="w-[calc(100%-4rem)] mx-auto rounded-md h-[70vh] overflow-hidden">
-        <Vortex
-          backgroundColor="black"
-          baseHue={220}
-          particleCount={800}
-          baseSpeed={0.2}
-          rangeSpeed={2.0}
+        <GradientBackground
           className="flex items-center flex-col justify-center px-2 md:px-10 py-4 w-full h-full"
         >
           <h1 className="text-white text-2xl md:text-6xl font-bold text-center">
@@ -32,7 +27,7 @@ export default function Home() {
               Explore Data Analysis
             </Link>
           </div>
-        </Vortex>
+        </GradientBackground>
       </div>
 
       {/* Technologies Section */}
