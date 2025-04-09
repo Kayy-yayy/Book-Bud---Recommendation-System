@@ -54,10 +54,15 @@ export const Vortex = (props: VortexProps) => {
   
   React.useEffect(() => {
     try {
-      setNoise3D(createNoise3D());
+      console.log("Creating noise function");
+      const noiseFunc = createNoise3D();
+      console.log("Noise function created successfully");
+      setNoise3D(noiseFunc);
     } catch (error) {
       console.warn("simplex-noise error, using fallback", error);
-      setNoise3D(createFallbackNoise3D());
+      const fallbackNoise = createFallbackNoise3D();
+      console.log("Using fallback noise function");
+      setNoise3D(fallbackNoise);
     }
   }, []);
   
@@ -216,13 +221,22 @@ export const Vortex = (props: VortexProps) => {
     canvas: HTMLCanvasElement,
     ctx?: CanvasRenderingContext2D
   ) => {
-    const { innerWidth, innerHeight } = window;
+    try {
+      // Get parent dimensions instead of window dimensions
+      const parent = canvas.parentElement;
+      const width = parent ? parent.clientWidth : window.innerWidth;
+      const height = parent ? parent.clientHeight : window.innerHeight;
 
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+      canvas.width = width;
+      canvas.height = height;
 
-    center[0] = 0.5 * canvas.width;
-    center[1] = 0.5 * canvas.height;
+      center[0] = 0.5 * canvas.width;
+      center[1] = 0.5 * canvas.height;
+      
+      console.log(`Canvas resized to ${width}x${height}`);
+    } catch (error) {
+      console.error("Error resizing canvas:", error);
+    }
   };
 
   const renderGlow = (
