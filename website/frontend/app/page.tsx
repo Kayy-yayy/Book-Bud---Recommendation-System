@@ -1,17 +1,18 @@
 "use client";
 
 import React from "react";
-import { GradientBackground } from "@/components/ui/gradient-background";
+import { Vortex } from "@/components/ui/vortex";
 import Link from "next/link";
 import { IconBrandPython, IconBrandReact, IconDatabase, IconChartBar, IconSearch, IconUsers } from "@tabler/icons-react";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Hero Section with Gradient Background */}
-      <div className="w-[calc(100%-4rem)] mx-auto rounded-md h-[70vh] overflow-hidden">
-        <GradientBackground
-          className="flex items-center flex-col justify-center px-2 md:px-10 py-4 w-full h-full"
+      {/* Hero Section with Vortex */}
+      <div className="w-full h-[70vh]">
+        <Vortex
+          backgroundColor="black"
+          className="flex items-center flex-col justify-center px-4 md:px-10 py-4 w-full h-full"
         >
           <h1 className="text-white text-2xl md:text-6xl font-bold text-center">
             Book Bud
@@ -27,7 +28,7 @@ export default function Home() {
               Explore Data Analysis
             </Link>
           </div>
-        </GradientBackground>
+        </Vortex>
       </div>
 
       {/* Technologies Section */}
