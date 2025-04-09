@@ -12,49 +12,6 @@ export const Vortex = ({
   className?: string;
   backgroundColor?: string;
 }) => {
-  children?: any;
-  className?: string;
-  containerClassName?: string;
-  particleCount?: number;
-  rangeY?: number;
-  baseHue?: number;
-  baseSpeed?: number;
-  rangeSpeed?: number;
-  baseRadius?: number;
-  rangeRadius?: number;
-  backgroundColor?: string;
-}
-
-// This is a fallback implementation if simplex-noise is not available
-const createFallbackNoise3D = () => {
-  return (x: number, y: number, z: number) => {
-    // Simple fallback noise function
-    return Math.sin(x * 10) * Math.cos(y * 10) * Math.sin(z * 10) * 0.5;
-  };
-};
-
-export const Vortex = (props: VortexProps) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef(null);
-  const particleCount = props.particleCount || 700;
-  const particlePropCount = 9;
-  const particlePropsLength = particleCount * particlePropCount;
-  const rangeY = props.rangeY || 100;
-  const baseTTL = 50;
-  const rangeTTL = 150;
-  const baseSpeed = props.baseSpeed || 0.0;
-  const rangeSpeed = props.rangeSpeed || 1.5;
-  const baseRadius = props.baseRadius || 1;
-  const rangeRadius = props.rangeRadius || 2;
-  const baseHue = props.baseHue || 220;
-  const rangeHue = 100;
-  const noiseSteps = 3;
-  const xOff = 0.00125;
-  const yOff = 0.00125;
-  const zOff = 0.0005;
-  const backgroundColor = props.backgroundColor || "#000000";
-  let tick = 0;
-  
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
