@@ -100,44 +100,32 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Recommendation Approaches Section */}
-      <div className="py-16 px-4 md:px-8 bg-black">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-white">Recommendation Approaches</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <ApproachCard 
-              title="Popularity-Based"
-              description="Recommends books based on popularity metrics like number of ratings and average rating."
-              link="/popularity-based"
-            />
-            <ApproachCard 
-              title="Content-Based"
-              description="Recommends books similar to ones you like based on features like author, title, and publisher."
-              link="/content-based"
-            />
-            <ApproachCard 
-              title="Collaborative Filtering"
-              description="Recommends books based on what similar users have liked, using patterns in user behavior."
-              link="/collaborative"
-            />
-          </div>
-        </div>
-      </div>
 
-      {/* Contact Section */}
-      <div className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-black">
-        <h2 className="text-3xl font-bold text-center mb-8 text-white">Contact</h2>
-        <div className="max-w-md mx-auto text-center">
-          <p className="mb-4">
-            Feel free to reach out if you have any questions or would like to discuss this project.
-          </p>
-          <div className="flex flex-col gap-2">
-            <p><strong>Email:</strong> your.email@example.com</p>
-            <p><strong>GitHub:</strong> github.com/yourusername</p>
-            <p><strong>LinkedIn:</strong> linkedin.com/in/yourprofile</p>
+
+      {/* Footer with Contact Information */}
+      <footer className="py-12 px-4 md:px-8 bg-gray-900 mt-auto border-t border-gray-800">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-2xl font-bold mb-6 text-white">Contact</h2>
+          <div className="flex flex-col md:flex-row justify-center items-center gap-6 text-gray-300">
+            <a href="mailto:kayy.1708@gmail.com" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+              <span>kayy.1708@gmail.com</span>
+            </a>
+            <a href="https://www.linkedin.com/in/kajalsinghai/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-blue-400 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                <rect x="2" y="9" width="4" height="12"></rect>
+                <circle cx="4" cy="4" r="2"></circle>
+              </svg>
+              <span>linkedin.com/in/kajalsinghai</span>
+            </a>
           </div>
+          <p className="mt-8 text-gray-500 text-sm">© {new Date().getFullYear()} Book Bud. All rights reserved.</p>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }
@@ -156,14 +144,4 @@ const TechCard = ({ icon, title, description }: { icon: React.ReactNode, title: 
   );
 };
 
-const ApproachCard = ({ title, description, link }: { title: string, description: string, link: string }) => {
-  return (
-    <div className="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-800">
-      <h3 className="text-xl font-semibold mb-3 text-white">{title}</h3>
-      <p className="text-gray-300 mb-4">{description}</p>
-      <Link href={link} className="text-blue-400 font-medium hover:underline">
-        Explore {title} →
-      </Link>
-    </div>
-  );
-};
+
