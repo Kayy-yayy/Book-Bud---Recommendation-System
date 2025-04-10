@@ -2,76 +2,108 @@
 
 import React from "react";
 import { Vortex } from "@/components/ui/vortex";
+import { HoverRevealItem } from "@/components/ui/hover-reveal-item";
 import Link from "next/link";
 import { IconBrandPython, IconBrandReact, IconDatabase, IconChartBar, IconSearch, IconUsers } from "@tabler/icons-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-black overflow-hidden">
       {/* Hero Section with Vortex */}
       <div className="w-full h-[70vh]">
         <Vortex
           backgroundColor="black"
           className="flex items-center flex-col justify-center px-4 md:px-10 py-4 w-full h-full"
         >
-          <h1 className="text-white text-4xl md:text-7xl font-bold text-center">
+          <h1 className="text-white text-2xl md:text-6xl font-bold text-center">
             Book Bud
           </h1>
-          <p className="text-white text-lg md:text-2xl max-w-2xl mt-6 text-center">
-            A sophisticated book recommendation system using multiple recommendation approaches
+          <p className="text-sm md:text-2xl max-w-xl mt-6 text-center" style={{ fontFamily: 'var(--font-work-sans)', color: 'rgba(255, 255, 255, 0.8)' }}>
+            A Sophisticated Book Recommendation System Using Multiple Recommendation Approaches
           </p>
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <Link href="/content-based" className="px-6 py-3 bg-blue-600 hover:bg-blue-700 transition duration-200 rounded-lg text-white shadow-[0px_2px_0px_0px_#FFFFFF40_inset]">
-              Discover Books
-            </Link>
-            <Link href="/eda" className="px-6 py-3 text-white hover:text-blue-200 transition duration-200">
-              Explore Data Analysis
-            </Link>
-          </div>
         </Vortex>
       </div>
 
       {/* Technologies Section */}
-      <div className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">Technologies Used</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <TechCard 
-            icon={<IconBrandPython size={48} />}
-            title="Python"
-            description="Core language used for data processing and recommendation algorithms"
-          />
-          <TechCard 
-            icon={<IconDatabase size={48} />}
-            title="Pandas & NumPy"
-            description="Data manipulation and numerical computations"
-          />
-          <TechCard 
-            icon={<IconChartBar size={48} />}
-            title="Scikit-learn"
-            description="Machine learning algorithms for recommendation systems"
-          />
-          <TechCard 
-            icon={<IconSearch size={48} />}
-            title="TF-IDF Vectorization"
-            description="Text processing for content-based filtering"
-          />
-          <TechCard 
-            icon={<IconUsers size={48} />}
-            title="Collaborative Filtering"
-            description="User-based and item-based recommendation approaches"
-          />
-          <TechCard 
-            icon={<IconBrandReact size={48} />}
-            title="Next.js & React"
-            description="Frontend framework for the web interface"
-          />
+      <div className="py-20 px-8 md:px-16 w-full bg-black">
+        {/* Table-like layout with grid for stability */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-0 relative">
+          {/* Center divider (absolute positioned for stability) */}
+          <div className="hidden md:block absolute h-full w-px bg-blue-600" style={{ left: '50%', transform: 'translateX(-50%)' }}></div>
+          
+          {/* Machine Learning Components */}
+          <div className="md:pr-12">
+            <h3 className="text-xl font mb-8 text-white text-center">Machine Learning Components</h3>
+            <ul className="space-y-3 text-white w-full">
+              <HoverRevealItem 
+                index={1}
+                title="Scikit-learn" 
+                description="Industry-standard ML library providing implementation of collaborative filtering, content-based algorithms, and evaluation metrics"
+              />
+              <HoverRevealItem 
+                index={2}
+                title="Collaborative Filtering Algorithms" 
+                description="User-based and item-based recommendation techniques that identify patterns in user-item interactions"
+              />
+              <HoverRevealItem 
+                index={3}
+                title="Content-Based Filtering with TF-IDF Vectorization" 
+                description="Text processing technique for converting book features into numerical vectors for similarity calculation"
+              />
+              <HoverRevealItem 
+                index={4}
+                title="Cosine Similarity Metrics" 
+                description="Mathematical approach for measuring content similarity between books based on their vector representations"
+              />
+              <HoverRevealItem 
+                index={5}
+                title="Data Preprocessing Pipeline" 
+                description="Techniques for cleaning, normalizing, and preparing book and user data for recommendation algorithms"
+              />
+            </ul>
+          </div>
+          
+          {/* Mobile divider */}
+          <div className="block md:hidden h-px bg-blue-600 my-8"></div>
+          
+          {/* Tech Stack */}
+          <div className="md:pl-12">
+            <h3 className="text-xl font mb-8 text-white text-center">Tech Stack Used</h3>
+            <ul className="space-y-3 text-white w-full">
+              <HoverRevealItem 
+                index={1}
+                title="Python" 
+                description="Core programming language powering the backend and machine learning components"
+              />
+              <HoverRevealItem 
+                index={2}
+                title="Pandas & NumPy" 
+                description="Essential data manipulation libraries for handling and processing the book and user datasets"
+              />
+              <HoverRevealItem 
+                index={3}
+                title="Next.js/React" 
+                description="Modern frontend framework enabling the interactive user interface and server-side rendering"
+              />
+              <HoverRevealItem 
+                index={4}
+                title="FastAPI" 
+                description="High-performance Python web framework for building the API layer"
+              />
+              <HoverRevealItem 
+                index={5}
+                title="Tailwind CSS" 
+                description="Utility-first CSS framework for creating the responsive, modern UI design"
+              />
+            </ul>
+          </div>
         </div>
       </div>
 
       {/* Recommendation Approaches Section */}
-      <div className="py-16 px-4 md:px-8 bg-gray-100 dark:bg-gray-900">
+      <div className="py-16 px-4 md:px-8 bg-black">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12">Recommendation Approaches</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">Recommendation Approaches</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <ApproachCard 
               title="Popularity-Based"
@@ -93,8 +125,8 @@ export default function Home() {
       </div>
 
       {/* Contact Section */}
-      <div className="py-16 px-4 md:px-8 max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-8">Contact</h2>
+      <div className="py-16 px-4 md:px-8 max-w-7xl mx-auto bg-black">
+        <h2 className="text-3xl font-bold text-center mb-8 text-white">Contact</h2>
         <div className="max-w-md mx-auto text-center">
           <p className="mb-4">
             Feel free to reach out if you have any questions or would like to discuss this project.
@@ -112,13 +144,13 @@ export default function Home() {
 
 const TechCard = ({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
+    <div className="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-800">
       <div className="flex flex-col items-center text-center">
-        <div className="text-blue-600 dark:text-blue-400 mb-4">
+        <div className="text-blue-400 mb-4">
           {icon}
         </div>
-        <h3 className="text-xl font-semibold mb-2">{title}</h3>
-        <p className="text-gray-600 dark:text-gray-300">{description}</p>
+        <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
+        <p className="text-gray-300">{description}</p>
       </div>
     </div>
   );
@@ -126,10 +158,10 @@ const TechCard = ({ icon, title, description }: { icon: React.ReactNode, title: 
 
 const ApproachCard = ({ title, description, link }: { title: string, description: string, link: string }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300">
-      <h3 className="text-xl font-semibold mb-3">{title}</h3>
-      <p className="text-gray-600 dark:text-gray-300 mb-4">{description}</p>
-      <Link href={link} className="text-blue-600 dark:text-blue-400 font-medium hover:underline">
+    <div className="bg-gray-900 p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-gray-800">
+      <h3 className="text-xl font-semibold mb-3 text-white">{title}</h3>
+      <p className="text-gray-300 mb-4">{description}</p>
+      <Link href={link} className="text-blue-400 font-medium hover:underline">
         Explore {title} →
       </Link>
     </div>

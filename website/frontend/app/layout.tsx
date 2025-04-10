@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat, Nunito_Sans, Work_Sans } from "next/font/google";
 import "./globals.css";
 import { FloatingDock } from "@/components/ui/floating-dock";
 import { 
@@ -11,6 +11,9 @@ import {
 } from "@tabler/icons-react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat" });
+const nunitoSans = Nunito_Sans({ subsets: ["latin"], variable: "--font-nunito-sans" });
+const workSans = Work_Sans({ subsets: ["latin"], variable: "--font-work-sans" });
 
 export const metadata: Metadata = {
   title: "Book Bud - Book Recommendation System",
@@ -20,27 +23,27 @@ export const metadata: Metadata = {
 const navItems = [
   {
     title: "Home",
-    icon: <IconHome className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+    icon: <IconHome className="h-full w-full text-white" />,
     href: "/",
   },
   {
     title: "Popularity-Based",
-    icon: <IconChartBar className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+    icon: <IconChartBar className="h-full w-full text-white" />,
     href: "/popularity-based",
   },
   {
     title: "Content-Based",
-    icon: <IconSearch className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+    icon: <IconSearch className="h-full w-full text-white" />,
     href: "/content-based",
   },
   {
     title: "Collaborative",
-    icon: <IconUsers className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+    icon: <IconUsers className="h-full w-full text-white" />,
     href: "/collaborative",
   },
   {
     title: "EDA",
-    icon: <IconChartPie className="h-full w-full text-neutral-500 dark:text-neutral-300" />,
+    icon: <IconChartPie className="h-full w-full text-white" />,
     href: "/eda",
   },
 ];
@@ -52,11 +55,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-sans bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen`}>
+      <body className={`${inter.variable} ${montserrat.variable} ${nunitoSans.variable} ${workSans.variable} font-sans bg-black text-white min-h-screen overflow-x-hidden`}>
         <main className="min-h-screen">
           {children}
         </main>
-        <FloatingDock items={navItems} />
+        <FloatingDock 
+          items={navItems} 
+          desktopClassName="fixed bottom-8 left-1/2 -translate-x-1/2 z-50" 
+          mobileClassName="fixed bottom-8 right-8 z-50" 
+        />
       </body>
     </html>
   );
