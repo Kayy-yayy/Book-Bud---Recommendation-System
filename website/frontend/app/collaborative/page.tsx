@@ -8,9 +8,7 @@ import {
   IconStar, 
   IconUsers, 
   IconUserCircle, 
-  IconPackage,
-  IconRefresh,
-  IconThumbUp
+  IconPackage
 } from "@tabler/icons-react";
 
 // Define book type
@@ -229,10 +227,10 @@ export default function CollaborativeFilteringPage() {
                 <div className="flex justify-between">
                   <button 
                     onClick={handleResetGuestRatings}
-                    className="px-4 py-2 text-gray-300 border border-gray-700 hover:bg-gray-800 rounded-md flex items-center gap-2"
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md flex items-center gap-2 mr-4"
                     disabled={guestRatings.size === 0}
                   >
-                    <IconRefresh className="h-4 w-4" />
+                    ↺
                     <span>Reset Ratings</span>
                   </button>
                   
@@ -248,7 +246,7 @@ export default function CollaborativeFilteringPage() {
                       </>
                     ) : (
                       <>
-                        <IconThumbUp className="h-4 w-4" />
+                        👍
                         <span>Get Recommendations</span>
                       </>
                     )}
@@ -291,7 +289,7 @@ export default function CollaborativeFilteringPage() {
                         onClick={handleResetGuestRatings}
                         className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-2"
                       >
-                        <IconRefresh className="h-4 w-4" />
+                        ↺
                         <span>Rate Different Books</span>
                       </button>
                     </div>

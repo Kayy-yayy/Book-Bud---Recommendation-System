@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { GlowingEffect } from "@/components/ui/glowing-effect";
+import { TracingBeam } from "@/components/ui/tracing-beam";
 import { 
   IconChartBar, 
   IconChartPie, 
@@ -9,7 +9,8 @@ import {
   IconChartDots, 
   IconBooks, 
   IconUsers, 
-  IconStar 
+  IconStar,
+  IconInfoCircle
 } from "@tabler/icons-react";
 
 interface EDAStats {
@@ -60,19 +61,18 @@ export default function EDAPage() {
   }, []);
 
   return (
-    <div className="min-h-screen py-12 px-4 md:px-8 relative">
-      {/* Glowing effect around the margins */}
-      <div className="absolute inset-0 pointer-events-none">
-        <GlowingEffect spread={100} glow={true} disabled={false} proximity={100} />
-      </div>
-      
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-2">Exploratory Data Analysis</h1>
-        <div className="bg-white/10 backdrop-blur-sm dark:bg-gray-800/50 rounded-xl p-6 mb-8 border border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-semibold mb-4">About EDA</h2>
+    <div className="min-h-screen bg-gray-950 text-gray-100 py-12 px-4 md:px-8 relative">
+      <TracingBeam className="w-full max-w-6xl mx-auto">
+        <div className="w-full mx-auto">
+        <h1 className="text-4xl font-bold mb-6 text-white">Exploratory Data Analysis</h1>
+        <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-xl">
+          <h2 className="text-2xl font-semibold mb-4 flex items-center">
+            <IconInfoCircle className="h-6 w-6 mr-2 text-blue-400" />
+            About EDA
+          </h2>
           <div className="space-y-4">
             <p className="text-lg">
-              Exploratory Data Analysis (EDA) is a critical first step in any data science project where we analyze and investigate data sets to summarize their main characteristics, often using visual methods. In the context of recommendation systems, EDA helps us understand user behavior, item characteristics, and interaction patterns.
+              Exploratory Data Analysis (EDA) is a critical first step in any  project where we analyze and investigate data sets to summarize their main characteristics, often using visual methods. In the context of recommendation systems, EDA helps us understand user behavior, item characteristics, and interaction patterns.
             </p>
             
             <h3 className="text-xl font-medium mt-4">How EDA is Performed in Book Bud</h3>
@@ -117,28 +117,28 @@ export default function EDAPage() {
               <StatCard 
                 title="Total Books" 
                 value={stats?.total_books.toLocaleString() || "0"} 
-                icon={<IconBooks className="h-8 w-8 text-blue-500" />}
+                icon={<IconBooks className="h-8 w-8 text-blue-400" />}
               />
               <StatCard 
                 title="Total Users" 
                 value={stats?.total_users.toLocaleString() || "0"} 
-                icon={<IconUsers className="h-8 w-8 text-green-500" />}
+                icon={<IconUsers className="h-8 w-8 text-green-400" />}
               />
               <StatCard 
                 title="Total Ratings" 
                 value={stats?.total_ratings.toLocaleString() || "0"} 
-                icon={<IconStar className="h-8 w-8 text-yellow-500" />}
+                icon={<IconStar className="h-8 w-8 text-yellow-400" />}
               />
               <StatCard 
                 title="Average Rating" 
                 value={(stats?.avg_rating || 0).toFixed(2)} 
-                icon={<IconChartBar className="h-8 w-8 text-purple-500" />}
+                icon={<IconChartBar className="h-8 w-8 text-purple-400" />}
               />
             </div>
             
             {/* Tabs */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden mb-8">
-              <div className="flex border-b border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-xl overflow-hidden mb-8">
+              <div className="flex border-b border-gray-700">
                 <TabButton 
                   active={activeTab === "overview"} 
                   onClick={() => setActiveTab("overview")}
@@ -173,8 +173,8 @@ export default function EDAPage() {
               
               <div className="p-6">
                 {activeTab === "overview" && (
-                  <div>
-                    <h2 className="text-xl font-semibold mb-4">Dataset Overview</h2>
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-semibold text-blue-400">Dataset Overview</h3>
                     <p className="mb-4">
                       The Book Bud dataset contains information about books, users, and ratings. 
                       This exploratory data analysis provides insights into the characteristics and patterns within the data.
@@ -295,7 +295,7 @@ export default function EDAPage() {
                 
                 {activeTab === "authors" && (
                   <div>
-                    <h2 className="text-xl font-semibold mb-4">Top Authors</h2>
+                    <h3 className="text-lg font-semibold mb-4 text-blue-400">Top Authors</h3>
                     
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -337,7 +337,7 @@ export default function EDAPage() {
                 
                 {activeTab === "publishers" && (
                   <div>
-                    <h2 className="text-xl font-semibold mb-4">Top Publishers</h2>
+                    <h3 className="text-lg font-semibold mb-4 text-blue-400">Top Publishers</h3>
                     
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -380,7 +380,7 @@ export default function EDAPage() {
                 
                 {activeTab === "years" && (
                   <div>
-                    <h2 className="text-xl font-semibold mb-4">Publication Year Analysis</h2>
+                    <h3 className="text-lg font-semibold mb-4 text-blue-400">Publication Years</h3>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
@@ -405,7 +405,7 @@ export default function EDAPage() {
                     <div>
                       <h3 className="font-medium mb-2">Publication Year Visualization</h3>
                       <img 
-                        src="/publication_year_distribution.png" 
+                        src="http://localhost:8000/eda-image/publication_year_distribution.png" 
                         alt="Publication Year Distribution" 
                         className="w-full h-auto rounded-lg shadow-md"
                         onError={(e) => {
@@ -420,8 +420,11 @@ export default function EDAPage() {
             </div>
             
             {/* Additional Visualizations */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
-              <h2 className="text-xl font-semibold mb-4">Recommendation Algorithm Insights</h2>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-xl overflow-hidden p-6">
+              <h2 className="text-xl font-semibold mb-4 text-blue-400 flex items-center">
+                <IconChartDots className="h-5 w-5 mr-2" />
+                Recommendation Algorithm Insights
+              </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -430,7 +433,7 @@ export default function EDAPage() {
                     This visualization shows the distribution of user-user similarity scores. The bell-shaped curve indicates a healthy distribution of similarities, which is crucial for effective collaborative filtering recommendations.
                   </p>
                   <img 
-                    src="/cf_similarity_distribution.png" 
+                    src="http://localhost:8000/eda-image/cf_similarity_distribution.png" 
                     alt="Collaborative Filtering Similarity Distribution" 
                     className="w-full h-auto rounded-lg shadow-md"
                     onError={(e) => {
@@ -446,7 +449,7 @@ export default function EDAPage() {
                     This chart displays the distribution of book-book similarity scores based on content features. The right-skewed distribution indicates that most books have moderate similarity with others, while a smaller subset has high similarity.
                   </p>
                   <img 
-                    src="/content_avg_similarity_distribution.png" 
+                    src="http://localhost:8000/eda-image/content_avg_similarity_distribution.png" 
                     alt="Content-Based Similarity Distribution" 
                     className="w-full h-auto rounded-lg shadow-md"
                     onError={(e) => {
@@ -462,7 +465,7 @@ export default function EDAPage() {
                     This visualization shows the long-tail distribution of book popularity. A small number of books receive a large number of ratings, while most books have relatively few ratings. This insight informed our popularity-based recommendation approach.
                   </p>
                   <img 
-                    src="/book_popularity_distribution.png" 
+                    src="http://localhost:8000/eda-image/book_popularity_distribution.png" 
                     alt="Book Popularity Distribution" 
                     className="w-full h-auto rounded-lg shadow-md"
                     onError={(e) => {
@@ -478,7 +481,7 @@ export default function EDAPage() {
                     This chart shows how active users are in terms of rating books. Understanding this distribution helped us address the cold-start problem and design the guest recommendation feature.
                   </p>
                   <img 
-                    src="/user_activity_distribution.png" 
+                    src="http://localhost:8000/eda-image/user_activity_distribution.png" 
                     alt="User Activity Distribution" 
                     className="w-full h-auto rounded-lg shadow-md"
                     onError={(e) => {
@@ -491,8 +494,11 @@ export default function EDAPage() {
             </div>
             
             {/* Data Cleaning and Preprocessing */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6 mt-8">
-              <h2 className="text-xl font-semibold mb-4">Data Cleaning and Preprocessing</h2>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl shadow-xl overflow-hidden p-6 mt-8">
+              <h2 className="text-xl font-semibold mb-4 text-blue-400 flex items-center">
+                <IconChartHistogram className="h-5 w-5 mr-2" />
+                Data Cleaning and Preprocessing
+              </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -502,7 +508,7 @@ export default function EDAPage() {
                   </p>
                   <div className="grid grid-cols-1 gap-4">
                     <img 
-                      src="/original_rating_distribution.png" 
+                      src="http://localhost:8000/eda-image/original_rating_distribution.png" 
                       alt="Original Rating Distribution" 
                       className="w-full h-auto rounded-lg shadow-md"
                       onError={(e) => {
@@ -511,7 +517,7 @@ export default function EDAPage() {
                       }}
                     />
                     <img 
-                      src="/filtered_rating_distribution.png" 
+                      src="http://localhost:8000/eda-image/filtered_rating_distribution.png" 
                       alt="Filtered Rating Distribution" 
                       className="w-full h-auto rounded-lg shadow-md"
                       onError={(e) => {
@@ -534,7 +540,7 @@ export default function EDAPage() {
                     <li><strong>Publisher Influence</strong>: Our analysis of top publishers (shown below) revealed patterns in user preferences that we incorporated into our content-based features.</li>
                   </ul>
                   <img 
-                    src="/top_publishers.png" 
+                    src="http://localhost:8000/eda-image/top_publishers.png" 
                     alt="Top Publishers Analysis" 
                     className="w-full h-auto rounded-lg shadow-md mt-4"
                     onError={(e) => {
@@ -547,21 +553,22 @@ export default function EDAPage() {
             </div>
           </>
         )}
-      </div>
+        </div>
+      </TracingBeam>
     </div>
   );
 }
 
 const StatCard = ({ title, value, icon }: { title: string, value: string, icon: React.ReactNode }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
+    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 shadow-xl">
       <div className="flex items-center">
         <div className="mr-4">
           {icon}
         </div>
         <div>
-          <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
-          <p className="text-2xl font-bold">{value}</p>
+          <h3 className="text-sm font-medium text-gray-400">{title}</h3>
+          <p className="text-2xl font-bold text-white">{value}</p>
         </div>
       </div>
     </div>
@@ -583,8 +590,8 @@ const TabButton = ({
     <button
       className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 focus:outline-none ${
         active
-          ? "border-blue-500 text-blue-600 dark:text-blue-400"
-          : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          ? "border-blue-500 text-blue-400"
+          : "border-transparent text-gray-400 hover:text-gray-300"
       }`}
       onClick={onClick}
     >

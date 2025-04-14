@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 import pandas as pd
 import numpy as np
 import os
@@ -329,6 +330,25 @@ async def get_guest_recommendations(request: GuestRatingRequest):
         return convert_to_response(recommendations)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating recommendations: {str(e)}")
+
+@app.get("/eda-image/{image_name}")
+async def get_eda_image(image_name: str):
+    """Serve EDA visualization images directly from the backend"""
+    # Define possible image locations
+    possible_paths = [
+        os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "eda_output", image_name),
+        os.path.join("/app", "eda_output", image_name),
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "eda_output", image_name),
+        os.path.join("eda_output", image_name)
+    ]
+    
+    # Try to find the image in one of the possible locations
+    for path in possible_paths:
+        if os.path.exists(path):
+            return FileResponse(path)
+    
+    # If image not found, return 404
+    raise HTTPException(status_code=404, detail=f"Image {image_name} not found")
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
