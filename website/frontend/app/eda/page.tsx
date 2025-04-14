@@ -9,8 +9,7 @@ import {
   IconChartDots, 
   IconBooks, 
   IconUsers, 
-  IconStar,
-  IconInfoCircle
+  IconStar
 } from "@tabler/icons-react";
 
 interface EDAStats {
@@ -67,7 +66,6 @@ export default function EDAPage() {
         <h1 className="text-4xl font-bold mb-6 text-white">Exploratory Data Analysis</h1>
         <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-xl">
           <h2 className="text-2xl font-semibold mb-4 flex items-center">
-            <IconInfoCircle className="h-6 w-6 mr-2 text-blue-400" />
             About EDA
           </h2>
           <div className="space-y-4">
