@@ -68,9 +68,38 @@ export default function EDAPage() {
       
       <div className="max-w-7xl mx-auto">
         <h1 className="text-4xl font-bold mb-2">Exploratory Data Analysis</h1>
-        <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
-          Insights and visualizations from the Book Bud dataset.
-        </p>
+        <div className="bg-white/10 backdrop-blur-sm dark:bg-gray-800/50 rounded-xl p-6 mb-8 border border-gray-200 dark:border-gray-700">
+          <h2 className="text-2xl font-semibold mb-4">About EDA</h2>
+          <div className="space-y-4">
+            <p className="text-lg">
+              Exploratory Data Analysis (EDA) is a critical first step in any data science project where we analyze and investigate data sets to summarize their main characteristics, often using visual methods. In the context of recommendation systems, EDA helps us understand user behavior, item characteristics, and interaction patterns.
+            </p>
+            
+            <h3 className="text-xl font-medium mt-4">How EDA is Performed in Book Bud</h3>
+            <p>
+              For the Book Bud recommendation system, we performed comprehensive EDA on three primary datasets:
+            </p>
+            
+            <ul className="list-disc pl-6 space-y-2">
+              <li><strong>Books Dataset</strong>: Analyzed publication years, publishers, and authors to understand the distribution and diversity of our book catalog.</li>
+              <li><strong>Users Dataset</strong>: Examined user demographics and activity levels to identify patterns in user engagement.</li>
+              <li><strong>Ratings Dataset</strong>: Investigated rating distributions, user rating behaviors, and book popularity metrics.</li>
+            </ul>
+            
+            <h3 className="text-xl font-medium mt-4">Key EDA Techniques Used</h3>
+            <ul className="list-disc pl-6 space-y-2">
+              <li><strong>Distribution Analysis</strong>: Examined the distribution of ratings, publication years, and user activity.</li>
+              <li><strong>Correlation Analysis</strong>: Identified relationships between user ratings and book attributes.</li>
+              <li><strong>Similarity Distribution</strong>: Analyzed the distribution of similarity scores for both collaborative filtering and content-based approaches.</li>
+              <li><strong>Data Cleaning</strong>: Identified and handled missing values, duplicates, and outliers in the datasets.</li>
+            </ul>
+            
+            <h3 className="text-xl font-medium mt-4">EDA Outputs</h3>
+            <p>
+              The visualizations below showcase the key findings from our EDA process. These insights directly informed the design and implementation of our recommendation algorithms, helping us optimize for better book recommendations.
+            </p>
+          </div>
+        </div>
         
         {loading ? (
           <div className="text-center py-12">
@@ -376,7 +405,7 @@ export default function EDAPage() {
                     <div>
                       <h3 className="font-medium mb-2">Publication Year Visualization</h3>
                       <img 
-                        src="/eda_output/publication_year_distribution.png" 
+                        src="/publication_year_distribution.png" 
                         alt="Publication Year Distribution" 
                         className="w-full h-auto rounded-lg shadow-md"
                         onError={(e) => {
@@ -392,13 +421,16 @@ export default function EDAPage() {
             
             {/* Additional Visualizations */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6">
-              <h2 className="text-xl font-semibold mb-4">Additional Visualizations</h2>
+              <h2 className="text-xl font-semibold mb-4">Recommendation Algorithm Insights</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="font-medium mb-2">Similarity Distribution</h3>
+                  <h3 className="font-medium mb-2">Collaborative Filtering Similarity Distribution</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    This visualization shows the distribution of user-user similarity scores. The bell-shaped curve indicates a healthy distribution of similarities, which is crucial for effective collaborative filtering recommendations.
+                  </p>
                   <img 
-                    src="/eda_output/cf_similarity_distribution.png" 
+                    src="/cf_similarity_distribution.png" 
                     alt="Collaborative Filtering Similarity Distribution" 
                     className="w-full h-auto rounded-lg shadow-md"
                     onError={(e) => {
@@ -409,14 +441,105 @@ export default function EDAPage() {
                 </div>
                 
                 <div>
-                  <h3 className="font-medium mb-2">Content-Based Similarity</h3>
+                  <h3 className="font-medium mb-2">Content-Based Similarity Distribution</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    This chart displays the distribution of book-book similarity scores based on content features. The right-skewed distribution indicates that most books have moderate similarity with others, while a smaller subset has high similarity.
+                  </p>
                   <img 
-                    src="/eda_output/content_avg_similarity_distribution.png" 
+                    src="/content_avg_similarity_distribution.png" 
                     alt="Content-Based Similarity Distribution" 
                     className="w-full h-auto rounded-lg shadow-md"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
                       target.src = "https://via.placeholder.com/600x400?text=Content+Similarity";
+                    }}
+                  />
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Book Popularity Distribution</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    This visualization shows the long-tail distribution of book popularity. A small number of books receive a large number of ratings, while most books have relatively few ratings. This insight informed our popularity-based recommendation approach.
+                  </p>
+                  <img 
+                    src="/book_popularity_distribution.png" 
+                    alt="Book Popularity Distribution" 
+                    className="w-full h-auto rounded-lg shadow-md"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://via.placeholder.com/600x400?text=Book+Popularity";
+                    }}
+                  />
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">User Activity Distribution</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    This chart shows how active users are in terms of rating books. Understanding this distribution helped us address the cold-start problem and design the guest recommendation feature.
+                  </p>
+                  <img 
+                    src="/user_activity_distribution.png" 
+                    alt="User Activity Distribution" 
+                    className="w-full h-auto rounded-lg shadow-md"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://via.placeholder.com/600x400?text=User+Activity";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Data Cleaning and Preprocessing */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden p-6 mt-8">
+              <h2 className="text-xl font-semibold mb-4">Data Cleaning and Preprocessing</h2>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium mb-2">Original vs. Filtered Rating Distribution</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    These visualizations compare the rating distribution before and after data cleaning. We removed outliers and applied filtering techniques to ensure high-quality input for our recommendation algorithms.
+                  </p>
+                  <div className="grid grid-cols-1 gap-4">
+                    <img 
+                      src="/original_rating_distribution.png" 
+                      alt="Original Rating Distribution" 
+                      className="w-full h-auto rounded-lg shadow-md"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://via.placeholder.com/600x300?text=Original+Ratings";
+                      }}
+                    />
+                    <img 
+                      src="/filtered_rating_distribution.png" 
+                      alt="Filtered Rating Distribution" 
+                      className="w-full h-auto rounded-lg shadow-md"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://via.placeholder.com/600x300?text=Filtered+Ratings";
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium mb-2">Impact on Recommendation Quality</h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Our EDA process revealed several key insights that directly improved recommendation quality:
+                  </p>
+                  <ul className="list-disc pl-6 mt-2 space-y-2">
+                    <li><strong>Data Sparsity</strong>: We identified that our ratings matrix is over 99% sparse, which influenced our choice of collaborative filtering algorithms.</li>
+                    <li><strong>Rating Bias</strong>: Users tend to rate books they enjoy, creating a positive bias in ratings. We adjusted our recommendation algorithms to account for this.</li>
+                    <li><strong>Cold Start Problem</strong>: Many users have very few ratings, which led to the development of our guest recommendation mode and content-based fallback strategies.</li>
+                    <li><strong>Publisher Influence</strong>: Our analysis of top publishers (shown below) revealed patterns in user preferences that we incorporated into our content-based features.</li>
+                  </ul>
+                  <img 
+                    src="/top_publishers.png" 
+                    alt="Top Publishers Analysis" 
+                    className="w-full h-auto rounded-lg shadow-md mt-4"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://via.placeholder.com/600x400?text=Top+Publishers";
                     }}
                   />
                 </div>

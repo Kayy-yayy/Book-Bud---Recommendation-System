@@ -6,7 +6,7 @@ import os
 import sys
 import uvicorn
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 
 # Add multiple possible paths to find the recommendation modules
 possible_paths = [
@@ -79,6 +79,7 @@ preprocessor = None
 content_recommender = None
 collaborative_recommender = None
 popularity_recommender = None
+guest_recommender = None
 
 # Models initialization flag
 models_initialized = False
@@ -100,9 +101,17 @@ class RecommendationRequest(BaseModel):
     user_id: Optional[int] = None
     limit: int = 10
 
+class GuestRatingItem(BaseModel):
+    isbn: str
+    rating: int
+
+class GuestRatingRequest(BaseModel):
+    ratings: List[GuestRatingItem]
+    limit: int = 10
+
 @app.on_event("startup")
 async def startup_event():
-    global preprocessor, content_recommender, collaborative_recommender, popularity_recommender, models_initialized
+    global preprocessor, content_recommender, collaborative_recommender, popularity_recommender, guest_recommender, models_initialized
     
     try:
         print("Loading and preprocessing data...")
@@ -121,10 +130,20 @@ async def startup_event():
         collaborative_recommender.fit(min_user_ratings=10, min_book_ratings=5)
         
         # Initialize popularity-based recommender
-        popularity_recommender = PopularityRecommender(
-            preprocessor.ratings_processed, preprocessor.books_processed
-        )
-        popularity_recommender.fit(min_ratings=5)
+        popularity_recommender = PopularityRecommender(preprocessor.ratings_processed, preprocessor.books_processed)
+        
+        # Import and initialize the guest recommendation engine
+        try:
+            from guest_recommendation import GuestRecommendationEngine
+            guest_recommender = GuestRecommendationEngine(
+                preprocessor.ratings_processed, 
+                preprocessor.books_processed,
+                preprocessor.users_processed
+            )
+            print("Guest recommendation engine initialized successfully!")
+        except Exception as e:
+            print(f"Error initializing guest recommendation engine: {e}")
+            guest_recommender = None
         
         models_initialized = True
         print("All models initialized successfully!")
@@ -282,6 +301,34 @@ async def get_eda_stats():
         "top_authors": preprocessor.books_processed["Book-Author"].value_counts().head(10).to_dict(),
         "top_publishers": preprocessor.books_processed["Publisher"].value_counts().head(10).to_dict()
     }
+
+@app.post("/guest-recommendations", response_model=List[Dict[str, Any]])
+async def get_guest_recommendations(request: GuestRatingRequest):
+    if not models_initialized:
+        raise HTTPException(status_code=503, detail="Models are still initializing")
+    
+    if not guest_recommender:
+        raise HTTPException(status_code=503, detail="Guest recommendation engine is not available")
+    
+    if not request.ratings or len(request.ratings) < 3:
+        raise HTTPException(status_code=400, detail="Please provide at least 3 book ratings for better recommendations")
+    
+    try:
+        # Convert the ratings list to a dictionary
+        ratings_dict = {item.isbn: item.rating for item in request.ratings}
+        
+        # Get recommendations
+        recommendations = guest_recommender.get_recommendations_for_guest(
+            ratings_dict,
+            n=request.limit
+        )
+        
+        if recommendations.empty:
+            return []
+        
+        return convert_to_response(recommendations)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating recommendations: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)

@@ -10,6 +10,9 @@ export interface Book {
   Year?: number;
   Publisher?: string;
   ImageURL?: string;
+  ImageUrlS?: string; // Small image URL from Books.csv
+  ImageUrlM?: string; // Medium image URL from Books.csv
+  ImageUrlL?: string; // Large image URL from Books.csv
   Rating?: number;
 }
 

@@ -48,9 +48,50 @@ export default function CollaborativeFilteringPage() {
   const [guestError, setGuestError] = useState<string | null>(null);
   const [hasGuestRecommendations, setHasGuestRecommendations] = useState(false);
   
-  // We've removed the advanced mode states as they're no longer needed
+  // Advanced mode states (hidden by default)
+  const [advancedBooks, setAdvancedBooks] = useState<Book[]>([]);
+  const [advancedLoading, setAdvancedLoading] = useState(false);
+  const [advancedError, setAdvancedError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string>("");
+  const [method, setMethod] = useState<string>("user");
+  const [hasAdvancedSearched, setHasAdvancedSearched] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
-  // We've removed the handleGetRecommendations function as it's no longer needed
+  const handleGetRecommendations = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!userId.trim()) {
+      setAdvancedError("Please enter a user ID");
+      return;
+    }
+    
+    setAdvancedLoading(true);
+    setAdvancedError(null);
+    setHasAdvancedSearched(true);
+    
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/collaborative-filtering?user_id=${userId}&method=${method}&limit=12`;
+      
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setAdvancedBooks(data);
+      
+      if (data.length === 0) {
+        setAdvancedError(`No recommendations found for user ID: ${userId}`);
+      }
+    } catch (err) {
+      console.error("Failed to fetch recommendations:", err);
+      setAdvancedError("Failed to load recommendations. Please try again later.");
+      // Use mock data for development if API is not available
+      setAdvancedBooks(mockBooks);
+    } finally {
+      setAdvancedLoading(false);
+    }
+  };
 
   // Load popular books for guest rating on page load
   useEffect(() => {
@@ -161,7 +202,10 @@ export default function CollaborativeFilteringPage() {
     setGuestError(null);
   };
 
-  // We've removed the toggleAdvancedMode function as it's no longer needed
+  // Toggle advanced mode
+  const toggleAdvancedMode = () => {
+    setShowAdvanced(prev => !prev);
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 py-12 px-4 md:px-8 relative">
@@ -305,107 +349,145 @@ export default function CollaborativeFilteringPage() {
           <h1 className="text-4xl font-bold mt-16 mb-6 text-white">About Collaborative Filtering Recommendation</h1>
           
           <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-xl">
-            <p className="text-gray-300 mb-6">
-              Collaborative filtering is a recommendation technique that makes predictions about a user's interests by collecting preferences from many users. Unlike content-based filtering (which uses book attributes) or popularity-based recommendations (which uses overall popularity), collaborative filtering leverages the wisdom of the crowd to find patterns in user behavior.
-            </p>
-
-            <h3 className="text-xl font-medium mb-4 text-white">Key Components</h3>
-            
-            <div className="mb-6">
-              <h4 className="text-lg font-medium mb-2 text-blue-300">1. Data Filtering and Matrix Creation</h4>
-              <div className="pl-4 border-l-2 border-gray-700 mb-4">
-                <p className="font-medium text-gray-200 mb-1">Qualified User/Item Selection:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-300 ml-2 mb-3">
-                  <li>Filters users with ≥200 ratings and books with ≥50 ratings to ensure data reliability.</li>
-                  <li>Reduces computational complexity and improves recommendation quality.</li>
-                </ul>
-                
-                <p className="font-medium text-gray-200 mb-1">Matrix Construction:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-300 ml-2">
-                  <li>Item-User Matrix: Books as rows, users as columns, filled with ratings.</li>
-                  <li>User-Item Matrix: Transpose of the item-user matrix for user-based analysis.</li>
-                </ul>
-              </div>
-            </div>
-            
-            <div className="mb-6">
-              <h4 className="text-lg font-medium mb-2 text-blue-300">2. Similarity Computation</h4>
-              <div className="pl-4 border-l-2 border-gray-700">
-                <p className="font-medium text-gray-200 mb-1">Cosine Similarity:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-300 ml-2 mb-3">
-                  <li>Measures the cosine of the angle between rating vectors.</li>
-                  <li>Formula: Similarity = (A·B)/(||A||×||B||)</li>
-                  <li>Values range from 0 (no similarity) to 1 (identical).</li>
-                </ul>
-                
-                <p className="font-medium text-gray-200 mb-1">Normalization:</p>
-                <ul className="list-disc list-inside space-y-1 text-gray-300 ml-2">
-                  <li>Adjusts for user rating biases by subtracting mean ratings.</li>
-                </ul>
-              </div>
-            </div>
-            
-            <h3 className="text-xl font-medium mb-4 text-white">Recommendation Approaches</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
               <div className="flex flex-col p-4 bg-gray-800 rounded-lg">
-                <IconUserCircle className="h-10 w-10 text-blue-400 mb-3" />
-                <h4 className="text-lg font-medium mb-2 text-white">User-Based Collaborative Filtering</h4>
-                <p className="text-gray-300 mb-2 font-medium">Steps:</p>
-                <ol className="list-decimal list-inside space-y-1 text-gray-300 mb-3">
-                  <li>Find users with similar rating patterns to the target user.</li>
-                  <li>Identify books liked by these users but unrated by the target.</li>
-                  <li>Predict ratings using a weighted average of similar users' ratings.</li>
-                </ol>
-                <p className="text-gray-400 text-sm italic">Example: If User A and B both rate fantasy books highly, recommend B's favorite unread fantasy book to A.</p>
+                <IconUserCircle className="h-12 w-12 text-blue-400 mb-4" />
+                <h3 className="text-lg font-medium mb-2 text-white">User-Based Filtering</h3>
+                <p className="text-gray-300">
+                  Recommends books based on what similar users have liked. The system finds users with similar taste to you and suggests books they've enjoyed.
+                </p>
               </div>
               
               <div className="flex flex-col p-4 bg-gray-800 rounded-lg">
-                <IconPackage className="h-10 w-10 text-blue-400 mb-3" />
-                <h4 className="text-lg font-medium mb-2 text-white">Item-Based Collaborative Filtering</h4>
-                <p className="text-gray-300 mb-2 font-medium">Steps:</p>
-                <ol className="list-decimal list-inside space-y-1 text-gray-300 mb-3">
-                  <li>Identify books similar to those the target user has rated.</li>
-                  <li>Predict ratings based on similarity-weighted ratings of these items.</li>
-                </ol>
-                <p className="text-gray-400 text-sm italic">Example: If a user likes The Lord of the Rings, recommend The Wheel of Time due to overlapping reader ratings.</p>
+                <IconPackage className="h-12 w-12 text-blue-400 mb-4" />
+                <h3 className="text-lg font-medium mb-2 text-white">Item-Based Filtering</h3>
+                <p className="text-gray-300">
+                  Recommends books similar to ones you've already liked. The system analyzes patterns in book ratings to find books that are frequently liked together.
+                </p>
               </div>
             </div>
             
-            <div className="bg-blue-900/30 p-5 rounded-lg border border-blue-800 mb-6">
-              <h4 className="text-lg font-medium mb-2 text-blue-300">Hybrid Approach</h4>
-              <p className="text-gray-300 mb-1">Combines user-based and item-based recommendations with adjustable weights.</p>
-              <p className="text-gray-300">Enhances diversity and balances personalization with item relevance.</p>
-            </div>
-            
-            <h3 className="text-xl font-medium mb-3 text-white">Implementation Challenges</h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left text-gray-300">
-                <thead className="text-xs uppercase bg-gray-800 text-gray-400">
-                  <tr>
-                    <th scope="col" className="px-4 py-3">Challenge</th>
-                    <th scope="col" className="px-4 py-3">Solution</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-gray-700">
-                    <td className="px-4 py-3 font-medium">Data Sparsity</td>
-                    <td className="px-4 py-3">Filter inactive users/items</td>
-                  </tr>
-                  <tr className="border-b border-gray-700">
-                    <td className="px-4 py-3 font-medium">Scalability</td>
-                    <td className="px-4 py-3">Use sparse matrices for efficiency</td>
-                  </tr>
-                  <tr>
-                    <td className="px-4 py-3 font-medium">Bias in Ratings</td>
-                    <td className="px-4 py-3">Normalize by user mean ratings</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="mt-6 bg-blue-900/30 p-6 rounded-lg border border-blue-800">
+              <h3 className="text-xl font-medium mb-4 text-blue-300">How Guest Recommendations Work</h3>
+              <p className="text-gray-300 mb-4">
+                When you rate books in the guest mode, our system:
+              </p>
+              <ol className="list-decimal list-inside space-y-3 text-gray-300">
+                <li>Compares your ratings with thousands of other users in our database</li>
+                <li>Identifies users with similar reading preferences</li>
+                <li>Recommends books those similar users enjoyed but you haven't rated yet</li>
+                <li>Ranks these recommendations based on predicted enjoyment level</li>
+              </ol>
+              <p className="mt-4 text-gray-300">
+                This allows us to offer personalized recommendations even if you're not in our user database!
+              </p>
             </div>
           </div>
           
-          {/* We've removed the Advanced Mode section */}
+          {/* Advanced Mode Toggle */}
+          <div className="flex justify-center mb-8">
+            <button
+              onClick={toggleAdvancedMode}
+              className="px-4 py-2 text-gray-300 border border-gray-700 hover:bg-gray-800 rounded-md"
+            >
+              {showAdvanced ? "Hide Advanced Mode" : "Show Advanced Mode"}
+            </button>
+          </div>
+          
+          {/* Advanced Mode - Only show if toggled */}
+          {showAdvanced && (
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8 shadow-xl">
+              <h2 className="text-xl font-semibold mb-4 text-white">Advanced Mode: Specific User Recommendations</h2>
+              <p className="text-gray-300 mb-4">
+                For demonstration purposes, you can also view recommendations for specific users in our database.
+              </p>
+              
+              <form onSubmit={handleGetRecommendations} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">User ID</label>
+                    <div className="relative">
+                      <input 
+                        type="text" 
+                        className="w-full p-2 pl-10 border border-gray-700 rounded-md bg-gray-800 text-white"
+                        placeholder="e.g., 276725"
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
+                      />
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <IconUserCircle className="h-4 w-4 text-gray-500" />
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      For demo purposes, try user IDs: 276725, 276726, 276727
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium mb-2 text-gray-300">Recommendation Method</label>
+                    <select 
+                      className="w-full p-2 border border-gray-700 rounded-md bg-gray-800 text-white"
+                      value={method}
+                      onChange={(e) => setMethod(e.target.value)}
+                    >
+                      <option value="user">User-Based</option>
+                      <option value="item">Item-Based</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div className="flex justify-end">
+                  <button 
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center gap-2"
+                    disabled={advancedLoading}
+                  >
+                    {advancedLoading ? (
+                      <>
+                        <div className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Finding Books...</span>
+                      </>
+                    ) : (
+                      <>
+                        <IconUsers className="h-4 w-4" />
+                        <span>Get Recommendations</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+              
+              {/* Advanced Results */}
+              {hasAdvancedSearched && (
+                <div className="mt-8">
+                  <h2 className="text-2xl font-semibold mb-4 text-white">
+                    {advancedLoading ? "Finding Books..." : 
+                     advancedError ? "Recommendation Results" : 
+                     `Recommended Books for User ${userId}`}
+                  </h2>
+                  
+                  {advancedLoading ? (
+                    <div className="text-center py-12">
+                      <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
+                      <p className="mt-4">Generating personalized recommendations...</p>
+                    </div>
+                  ) : advancedError ? (
+                    <div className="text-center py-12 text-red-400">
+                      <p>{advancedError}</p>
+                    </div>
+                  ) : (
+                    <HoverEffect items={advancedBooks.map(book => ({
+                      title: book.Title,
+                      description: `by ${book.Author}${book.Year ? ` (${book.Year})` : ''}`,
+                      link: "#",
+                      image: book.ImageUrlL || book.ImageUrlM || book.ImageUrlS || "",
+                      rating: book.Rating
+                    }))} />
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </TracingBeam>
     </div>
