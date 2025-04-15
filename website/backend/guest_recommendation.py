@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict
 from sklearn.metrics.pairwise import cosine_similarity
+from scipy.sparse import csr_matrix
 
 class GuestRecommendationEngine:
     """
@@ -28,11 +29,18 @@ class GuestRecommendationEngine:
         self.users_df = users_df
         
         # Create a pivot table of user ratings for faster similarity calculation
-        self.user_item_matrix = self.ratings_df.pivot(
+        pivot_df = self.ratings_df.pivot(
             index='User-ID',
             columns='ISBN',
             values='Book-Rating'
         ).fillna(0)
+        
+        # Convert to sparse matrix for efficiency
+        self.user_item_matrix = csr_matrix(pivot_df.values)
+        self.user_id_map = {i: user_id for i, user_id in enumerate(pivot_df.index)}
+        self.isbn_map = {i: isbn for i, isbn in enumerate(pivot_df.columns)}
+        self.isbn_to_idx = {isbn: i for i, isbn in enumerate(pivot_df.columns)}
+        self.n_users, self.n_items = self.user_item_matrix.shape
     
     def find_similar_users(self, guest_ratings: Dict[str, int], k: int = 10) -> List[int]:
         """
@@ -50,35 +58,40 @@ class GuestRecommendationEngine:
         List[int]
             List of user IDs most similar to the guest
         """
-        # Create a guest user vector
-        guest_vector = pd.Series(0, index=self.user_item_matrix.columns)
+        # Create a sparse guest user vector
+        guest_data = []
+        guest_row_indices = []
+        guest_col_indices = []
         
-        # Fill in the guest ratings
+        valid_ratings_count = 0
         for isbn, rating in guest_ratings.items():
-            if isbn in guest_vector.index:
-                guest_vector[isbn] = rating
+            if isbn in self.isbn_to_idx:
+                guest_data.append(rating)
+                guest_row_indices.append(0)
+                guest_col_indices.append(self.isbn_to_idx[isbn])
+                valid_ratings_count += 1
         
-        # Calculate cosine similarity between guest and all users
-        similarities = {}
-        for user_id in self.user_item_matrix.index:
-            user_vector = self.user_item_matrix.loc[user_id]
+        if valid_ratings_count == 0:
+            return [] # Guest rated books not in our dataset
             
-            # Only consider books that either the guest or the user has rated
-            mask = (guest_vector > 0) | (user_vector > 0)
-            if mask.sum() == 0:  # No overlap
-                continue
-                
-            # Calculate cosine similarity
-            user_vector_filtered = user_vector[mask].values.reshape(1, -1)
-            guest_vector_filtered = guest_vector[mask].values.reshape(1, -1)
-            
-            if np.count_nonzero(user_vector_filtered) > 0 and np.count_nonzero(guest_vector_filtered) > 0:
-                sim = cosine_similarity(user_vector_filtered, guest_vector_filtered)[0][0]
-                similarities[user_id] = sim
+        guest_vector = csr_matrix((guest_data, (guest_row_indices, guest_col_indices)), shape=(1, self.n_items))
         
-        # Sort by similarity and return top k
-        similar_users = sorted(similarities.items(), key=lambda x: x[1], reverse=True)[:k]
-        return [user_id for user_id, _ in similar_users]
+        # Calculate cosine similarity between guest and all users (vectorized)
+        similarities = cosine_similarity(guest_vector, self.user_item_matrix)[0] # Get the first (and only) row
+        
+        # Get indices of top k similar users (excluding the guest itself if they were somehow in the matrix)
+        # Argsort returns indices that would sort the array in ascending order
+        # We want descending, so we use negative similarities or reverse the result
+        similar_user_indices = np.argsort(similarities)[::-1][:k]
+        
+        # Map indices back to User-IDs, filtering out users with zero similarity
+        similar_users = [
+            self.user_id_map[idx] 
+            for idx in similar_user_indices 
+            if similarities[idx] > 0
+        ]
+        
+        return similar_users
     
     def get_recommendations_for_guest(self, guest_ratings: Dict[str, int], n: int = 10) -> pd.DataFrame:
         """
