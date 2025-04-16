@@ -54,10 +54,10 @@ app.add_middleware(
 )
 
 # Hardcoded paths for Railway deployment
-# Use absolute paths to the root directory
-BOOKS_PATH = "/Books.csv"
-RATINGS_PATH = "/Ratings.csv"
-USERS_PATH = "/Users.csv"
+# Use absolute paths to the /app directory where the files are actually located
+BOOKS_PATH = "/app/Books.csv"
+RATINGS_PATH = "/app/Ratings.csv"
+USERS_PATH = "/app/Users.csv"
 
 print(f"Using hardcoded paths for CSV files:")
 print(f"BOOKS_PATH: {BOOKS_PATH}")
