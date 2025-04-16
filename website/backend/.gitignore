@@ -45,8 +45,3 @@ env/
 *.db
 *.sqlite
 *.sqlite3
-
-# Specific CSV files
-/Books.csv
-/Ratings.csv
-/Users.csv
