@@ -68,6 +68,18 @@ if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exist
 else:
     # Fall back to checking other possible locations
     print("CSV files not found in current directory, checking alternative locations...")
+    # List root directory contents for debugging
+    try:
+        print(f"Root directory contents: {os.listdir('/')}")
+    except Exception as e:
+        print(f"Error listing root directory: {e}")
+    
+    # List /app directory contents for debugging
+    try:
+        print(f"/app directory contents: {os.listdir('/app')}")
+    except Exception as e:
+        print(f"Error listing /app directory: {e}")
+        
     for data_dir in ['/app', '/data', '/', '.', '..', '../..', '/app/data']:
         books_path = os.path.join(data_dir, "Books.csv")
         ratings_path = os.path.join(data_dir, "Ratings.csv")
