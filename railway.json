@@ -2,7 +2,7 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "mkdir -p /app && cp -r website/backend/* /app/ && cp *.py /app/ && ls -la *.csv && cp -v *.csv / && cp -v *.csv /app/ && ls -la / | grep csv && ls -la /app | grep csv && cd /app && pip install -r requirements.txt"
+    "buildCommand": "mkdir -p /app && cp -r website/backend/* /app/ && cp *.py /app/ && echo 'Checking for CSV files:' && ls -la && echo 'Explicitly copying each CSV file:' && cp -v Books.csv / && cp -v Ratings.csv / && cp -v Users.csv / && cp -v Books.csv /app/ && cp -v Ratings.csv /app/ && cp -v Users.csv /app/ && echo 'Verifying files in root:' && ls -la / && echo 'Verifying files in /app:' && ls -la /app && cd /app && pip install -r requirements.txt"
   },
   "deploy": {
     "startCommand": "python -c \"import os; import uvicorn; port = int(os.environ.get('PORT', 8000)); uvicorn.run('app:app', host='0.0.0.0', port=port)\"",
