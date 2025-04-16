@@ -53,50 +53,28 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Data paths
-# First check for CSV files in the current directory (backend folder)
-current_dir = os.path.dirname(os.path.abspath(__file__))
-books_path = os.path.join(current_dir, "Books.csv")
-ratings_path = os.path.join(current_dir, "Ratings.csv")
-users_path = os.path.join(current_dir, "Users.csv")
+# Hardcoded paths for Railway deployment
+# Use absolute paths to the root directory
+BOOKS_PATH = "/Books.csv"
+RATINGS_PATH = "/Ratings.csv"
+USERS_PATH = "/Users.csv"
 
-if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exists(users_path):
-    print(f"Found data files in current directory: {current_dir}")
-    BOOKS_PATH = books_path
-    RATINGS_PATH = ratings_path
-    USERS_PATH = users_path
-else:
-    # Fall back to checking other possible locations
-    print("CSV files not found in current directory, checking alternative locations...")
-    # List root directory contents for debugging
-    try:
-        print(f"Root directory contents: {os.listdir('/')}")
-    except Exception as e:
-        print(f"Error listing root directory: {e}")
-    
-    # List /app directory contents for debugging
-    try:
-        print(f"/app directory contents: {os.listdir('/app')}")
-    except Exception as e:
-        print(f"Error listing /app directory: {e}")
-        
-    for data_dir in ['/app', '/data', '/', '.', '..', '../..', '/app/data']:
-        books_path = os.path.join(data_dir, "Books.csv")
-        ratings_path = os.path.join(data_dir, "Ratings.csv")
-        users_path = os.path.join(data_dir, "Users.csv")
-        
-        if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exists(users_path):
-            print(f"Found data files in {data_dir}")
-            BOOKS_PATH = books_path
-            RATINGS_PATH = ratings_path
-            USERS_PATH = users_path
-            break
-    else:
-        # Fallback to original paths if not found anywhere
-        print("Using root directory data file paths...")
-        BOOKS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Books.csv")
-        RATINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Ratings.csv")
-        USERS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Users.csv")
+print(f"Using hardcoded paths for CSV files:")
+print(f"BOOKS_PATH: {BOOKS_PATH}")
+print(f"RATINGS_PATH: {RATINGS_PATH}")
+print(f"USERS_PATH: {USERS_PATH}")
+
+# Debug: List root directory contents
+try:
+    print(f"Root directory contents: {os.listdir('/')}")
+except Exception as e:
+    print(f"Error listing root directory: {e}")
+
+# Debug: List /app directory contents
+try:
+    print(f"/app directory contents: {os.listdir('/app')}")
+except Exception as e:
+    print(f"Error listing /app directory: {e}")
 
 print(f"Using data files from: {BOOKS_PATH}")
 
