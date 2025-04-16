@@ -39,7 +39,6 @@ env/
 .env.local
 
 # Large data files
-*.csv
 *.parquet
 *.xlsx
 *.xls

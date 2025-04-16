@@ -54,24 +54,37 @@ app.add_middleware(
 )
 
 # Data paths
-# Check for data files in multiple possible locations
-for data_dir in ['/data', '/app', '/app/website/backend', '.', '..', '../..']:
-    books_path = os.path.join(data_dir, "Books.csv")
-    ratings_path = os.path.join(data_dir, "Ratings.csv")
-    users_path = os.path.join(data_dir, "Users.csv")
-    
-    if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exists(users_path):
-        print(f"Found data files in {data_dir}")
-        BOOKS_PATH = books_path
-        RATINGS_PATH = ratings_path
-        USERS_PATH = users_path
-        break
+# First check for CSV files in the current directory (backend folder)
+current_dir = os.path.dirname(os.path.abspath(__file__))
+books_path = os.path.join(current_dir, "Books.csv")
+ratings_path = os.path.join(current_dir, "Ratings.csv")
+users_path = os.path.join(current_dir, "Users.csv")
+
+if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exists(users_path):
+    print(f"Found data files in current directory: {current_dir}")
+    BOOKS_PATH = books_path
+    RATINGS_PATH = ratings_path
+    USERS_PATH = users_path
 else:
-    # Fallback to original paths if not found anywhere
-    print("Using default data file paths...")
-    BOOKS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Books.csv")
-    RATINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Ratings.csv")
-    USERS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Users.csv")
+    # Fall back to checking other possible locations
+    print("CSV files not found in current directory, checking alternative locations...")
+    for data_dir in ['/app', '.', '..', '../..']:
+        books_path = os.path.join(data_dir, "Books.csv")
+        ratings_path = os.path.join(data_dir, "Ratings.csv")
+        users_path = os.path.join(data_dir, "Users.csv")
+        
+        if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exists(users_path):
+            print(f"Found data files in {data_dir}")
+            BOOKS_PATH = books_path
+            RATINGS_PATH = ratings_path
+            USERS_PATH = users_path
+            break
+    else:
+        # Fallback to original paths if not found anywhere
+        print("Using root directory data file paths...")
+        BOOKS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Books.csv")
+        RATINGS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Ratings.csv")
+        USERS_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "Users.csv")
 
 print(f"Using data files from: {BOOKS_PATH}")
 
