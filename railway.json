@@ -2,10 +2,10 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "cp website/backend/requirements.txt . && cp *.py website/backend/"
+    "buildCommand": "mkdir -p /app && cp -r website/backend/* /app/ && cp *.py /app/ && cd /app && pip install -r requirements.txt"
   },
   "deploy": {
-    "startCommand": "cd website/backend && python3 -c \"import os; print('Current directory:', os.getcwd()); print('Directory contents:', os.listdir('.'))\" && python3 -m uvicorn app:app --host 0.0.0.0 --port $PORT",
+    "startCommand": "cd /app && python -m uvicorn app:app --host 0.0.0.0 --port $PORT",
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 10
   }
