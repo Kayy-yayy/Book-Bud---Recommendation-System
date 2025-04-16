@@ -68,7 +68,7 @@ if os.path.exists(books_path) and os.path.exists(ratings_path) and os.path.exist
 else:
     # Fall back to checking other possible locations
     print("CSV files not found in current directory, checking alternative locations...")
-    for data_dir in ['/app', '.', '..', '../..']:
+    for data_dir in ['/app', '/data', '/', '.', '..', '../..', '/app/data']:
         books_path = os.path.join(data_dir, "Books.csv")
         ratings_path = os.path.join(data_dir, "Ratings.csv")
         users_path = os.path.join(data_dir, "Users.csv")
