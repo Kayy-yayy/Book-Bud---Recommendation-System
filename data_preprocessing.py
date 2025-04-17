@@ -61,28 +61,61 @@ class DataPreprocessor:
         # Create a copy to avoid modifying the original
         self.books_processed = self.books_df.copy()
         
-        # Drop duplicates based on ISBN
-        self.books_processed.drop_duplicates(subset=['ISBN'], inplace=True)
+        # Print columns for debugging
+        print(f"Books DataFrame columns: {self.books_processed.columns}")
         
-        # Remove duplicate books with the same title and author (keep only the first occurrence)
-        self.books_processed.drop_duplicates(subset=['Book-Title', 'Book-Author'], keep='first', inplace=True)
+        # Check if ISBN column exists before dropping duplicates
+        if 'ISBN' in self.books_processed.columns:
+            # Drop duplicates based on ISBN
+            self.books_processed.drop_duplicates(subset=['ISBN'], inplace=True)
+        else:
+            print("WARNING: 'ISBN' column not found in books data")
         
-        # Fill missing values
-        self.books_processed['Book-Title'] = self.books_processed['Book-Title'].fillna('Unknown Title')
-        self.books_processed['Book-Author'] = self.books_processed['Book-Author'].fillna('Unknown Author')
-        self.books_processed['Publisher'] = self.books_processed['Publisher'].fillna('Unknown Publisher')
-        self.books_processed['Year-Of-Publication'] = self.books_processed['Year-Of-Publication'].fillna('0')
+        # Check if Book-Title and Book-Author columns exist before dropping duplicates
+        if 'Book-Title' in self.books_processed.columns and 'Book-Author' in self.books_processed.columns:
+            # Remove duplicate books with the same title and author (keep only the first occurrence)
+            self.books_processed.drop_duplicates(subset=['Book-Title', 'Book-Author'], keep='first', inplace=True)
+        else:
+            print("WARNING: 'Book-Title' or 'Book-Author' columns not found in books data")
         
-        # Convert year to numeric, coercing errors to NaN, then fill NaNs with 0
-        self.books_processed['Year-Of-Publication'] = pd.to_numeric(
-            self.books_processed['Year-Of-Publication'], errors='coerce').fillna(0).astype(int)
+        # Fill missing values - check if columns exist first
+        if 'Book-Title' in self.books_processed.columns:
+            self.books_processed['Book-Title'] = self.books_processed['Book-Title'].fillna('Unknown Title')
+        else:
+            print("WARNING: 'Book-Title' column not found, adding it")
+            self.books_processed['Book-Title'] = 'Unknown Title'
+            
+        if 'Book-Author' in self.books_processed.columns:
+            self.books_processed['Book-Author'] = self.books_processed['Book-Author'].fillna('Unknown Author')
+        else:
+            print("WARNING: 'Book-Author' column not found, adding it")
+            self.books_processed['Book-Author'] = 'Unknown Author'
+            
+        if 'Publisher' in self.books_processed.columns:
+            self.books_processed['Publisher'] = self.books_processed['Publisher'].fillna('Unknown Publisher')
+        else:
+            print("WARNING: 'Publisher' column not found, adding it")
+            self.books_processed['Publisher'] = 'Unknown Publisher'
+            
+        if 'Year-Of-Publication' in self.books_processed.columns:
+            self.books_processed['Year-Of-Publication'] = self.books_processed['Year-Of-Publication'].fillna('0')
+            # Convert year to numeric, coercing errors to NaN, then fill NaNs with 0
+            self.books_processed['Year-Of-Publication'] = pd.to_numeric(
+                self.books_processed['Year-Of-Publication'], errors='coerce').fillna(0).astype(int)
+        else:
+            print("WARNING: 'Year-Of-Publication' column not found, adding it")
+            self.books_processed['Year-Of-Publication'] = 0
         
-        # Create a content string for content-based filtering
-        self.books_processed['content'] = (
-            self.books_processed['Book-Title'] + ' ' + 
-            self.books_processed['Book-Author'] + ' ' + 
-            self.books_processed['Publisher']
-        )
+        # Create a content string for content-based filtering - check if all required columns exist
+        if all(col in self.books_processed.columns for col in ['Book-Title', 'Book-Author', 'Publisher']):
+            self.books_processed['content'] = (
+                self.books_processed['Book-Title'] + ' ' + 
+                self.books_processed['Book-Author'] + ' ' + 
+                self.books_processed['Publisher']
+            )
+        else:
+            print("WARNING: Not all columns needed for content string exist, creating simplified version")
+            self.books_processed['content'] = 'Default content for recommendation'
         
         print(f"Cleaned books data. {len(self.books_processed)} books after cleaning.")
         return self
