@@ -5,8 +5,9 @@
     "dockerfilePath": "Dockerfile"
   },
   "deploy": {
-    "startCommand": "python -c \"import os; import sys; print('Python version:', sys.version); print('Environment variables:', os.environ); import uvicorn; port = int(os.environ.get('PORT', 8000)); print('Using port:', port); print('Starting uvicorn...'); uvicorn.run('app:app', host='0.0.0.0', port=port, log_level='debug')\"",
     "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
+    "restartPolicyMaxRetries": 10,
+    "healthcheckPath": "/status",
+    "healthcheckTimeout": 300
   }
 }

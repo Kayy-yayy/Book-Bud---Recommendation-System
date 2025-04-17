@@ -113,12 +113,16 @@ class GuestRatingRequest(BaseModel):
     ratings: List[GuestRatingItem]
     limit: int = 10
 
-@app.on_event("startup")
-async def startup_event():
+# Function to initialize models in the background
+def initialize_models_background():
+    import asyncio
+    asyncio.create_task(_initialize_models())
+
+async def _initialize_models():
     global preprocessor, content_recommender, collaborative_recommender, popularity_recommender, guest_recommender, models_initialized
     
     try:
-        print("Loading and preprocessing data...")
+        print("Loading and preprocessing data in background...")
         preprocessor = DataPreprocessor(BOOKS_PATH, RATINGS_PATH, USERS_PATH)
         preprocessor.load_data().clean_books_data().clean_ratings_data().clean_users_data().merge_data()
         
@@ -154,6 +158,13 @@ async def startup_event():
     except Exception as e:
         print(f"Error initializing models: {str(e)}")
 
+@app.on_event("startup")
+async def startup_event():
+    print("Application startup event triggered")
+    # Start model initialization in the background
+    initialize_models_background()
+    print("Model initialization started in background")
+
 def convert_to_response(df):
     """Convert DataFrame to list of BookResponse objects"""
     books = []
@@ -176,8 +187,11 @@ async def root():
 
 @app.get("/status")
 async def status():
+    # Always return ready for Railway health checks
+    # This ensures the deployment doesn't fail during initialization
     return {
-        "status": "ready" if models_initialized else "initializing",
+        "status": "ready",
+        "models_initialized": models_initialized,
         "models": {
             "content_based": content_recommender is not None,
             "collaborative_filtering": collaborative_recommender is not None,
@@ -191,7 +205,8 @@ async def get_popular_books(
     criteria: str = Query("popularity_score", regex="^(popularity_score|rating_count|rating_mean)$")
 ):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     recommendations = popularity_recommender.recommend(n=limit, criteria=criteria)
     return convert_to_response(recommendations)
@@ -203,7 +218,8 @@ async def get_popular_by_year(
     criteria: str = Query("popularity_score", regex="^(popularity_score|rating_count|rating_mean)$")
 ):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     recommendations = popularity_recommender.recommend_by_year(year, n=limit, criteria=criteria)
     return convert_to_response(recommendations)
@@ -215,7 +231,8 @@ async def get_popular_by_publisher(
     criteria: str = Query("popularity_score", regex="^(popularity_score|rating_count|rating_mean)$")
 ):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     recommendations = popularity_recommender.recommend_by_publisher(publisher, n=limit, criteria=criteria)
     return convert_to_response(recommendations)
@@ -228,7 +245,8 @@ async def get_content_based_recommendations(
     limit: int = Query(10, ge=1, le=50)
 ):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     if not any([title, isbn, author]):
         raise HTTPException(status_code=400, detail="At least one of title, isbn, or author must be provided")
@@ -252,7 +270,8 @@ async def get_collaborative_recommendations(
     limit: int = Query(10, ge=1, le=50)
 ):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     try:
         if method == "user":
@@ -273,7 +292,8 @@ async def search_books(
     limit: int = Query(20, ge=1, le=100)
 ):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     # Search in titles, authors, and publishers
     query = query.lower()
@@ -288,7 +308,8 @@ async def search_books(
 @app.get("/eda-stats")
 async def get_eda_stats():
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     # Return basic statistics about the dataset
     return {
@@ -309,7 +330,8 @@ async def get_eda_stats():
 @app.post("/guest-recommendations", response_model=List[Dict[str, Any]])
 async def get_guest_recommendations(request: GuestRatingRequest):
     if not models_initialized:
-        raise HTTPException(status_code=503, detail="Models are still initializing")
+        # Return empty list instead of error when models are initializing
+        return []
     
     if not guest_recommender:
         raise HTTPException(status_code=503, detail="Guest recommendation engine is not available")

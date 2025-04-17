@@ -9,12 +9,19 @@ COPY website/backend/ /app/
 # Copy recommendation system modules from root to app directory
 COPY *.py /app/
 
+# Copy CSV files explicitly
+COPY website/backend/Books.csv /app/
+COPY website/backend/Ratings.csv /app/
+COPY website/backend/Users.csv /app/
+
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Print directory contents for debugging
+RUN ls -la /app
 
 # Expose the port the app runs on
 EXPOSE 8000
 
-# Command to run the application
-# Use a shell form to ensure environment variable expansion works
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Simple startup command that works reliably with Railway
+CMD uvicorn app:app --host 0.0.0.0 --port $PORT
