@@ -24,4 +24,5 @@ RUN ls -la /app
 EXPOSE 8000
 
 # Simple startup command that works reliably with Railway
+# Use the shell form to ensure environment variables are properly expanded
 CMD uvicorn app:app --host 0.0.0.0 --port $PORT
